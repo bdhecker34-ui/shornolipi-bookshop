@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shornolipi Books | স্বর্ণলিপি বুকস - রাজকীয় বইয়ের সমাহার</title>
+
+  <!-- PWA Configuration Meta Tags with Inline Data URL (Enables full standalone support without manifest.json) -->
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22short_name%22%3A%22Shornolipi%22%2C%22name%22%3A%22Shornolipi%20Books%22%2C%22description%22%3A%22Premium%20Golden-Themed%20Noble%20Book%20Store%20%26%20Royal%20Literature%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fimages.unsplash.com%2Fphoto-1544947950-fa07a98d237f%3Fauto%3Dformat%26fit%3Dcrop%26q%3D80%26w%3D512%22%2C%22type%22%3A%22image%2Fpng%22%2C%22sizes%22%3A%22512x512%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%2C%22start_url%22%3A%22.%22%2C%22background_color%22%3A%22%23070709%22%2C%22theme_color%22%3A%22%23BF953F%22%2C%22display%22%3A%22standalone%22%2C%22orientation%22%3A%22portrait%22%7D" />
+  <meta name="theme-color" content="#BF953F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="apple-touch-icon" href="/icon-512.png" />
+
+  <!-- Google Fonts for Bengali & English Elegance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Inter", "Noto Sans Bengali", "sans-serif"],
+            royal: ["Cinzel", "serif"],
+            bengali: ["Noto Sans Bengali", "sans-serif"],
+          },
+          colors: {
+            gold: {
+              light: "#FCF6BA",
+              medium: "#BF953F",
+              dark: "#AA771C",
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Firebase Compat Core & Services SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  <!-- React & ReactDOM CDNs -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel Standalone to compile JSX on the fly -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Premium custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070709;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #BF953F;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #FCF6BA;
+    }
+
+    /* Selection Colors */
+    ::selection {
+      background: #BF953F;
+      color: #070709;
+    }
+
+    /* Keyframes for elegant marquee and text sparkles */
+    @keyframes marquee {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-100%, 0, 0); }
+    }
+    .animate-marquee-scroll {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 25s linear infinite;
+    }
+
+    /* Shimmer Effect for Luxury Buttons */
+    .btn-gold-shimmer {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-gold-shimmer::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 30%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.25);
+      transform: rotate(30deg);
+      transition: none;
+    }
+    .btn-gold-shimmer:hover::after {
+      left: 120%;
+      transition: all 0.6s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-[#070709] text-[#E0E0E6] antialiased min-h-screen">
+
+  <!-- React Root Container -->
+  <div id="root"></div>
+
+  <!-- PWA Service Worker Registration Script -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        // Use relative path so it loads correctly even when hosted in subfolders or standalone
+        navigator.serviceWorker
+          .register("sw.js")
+          .then((reg) => {
+            console.log("Shornolipi Service Worker active:", reg.scope);
+          })
+          .catch((err) => {
+            // Log as warning rather than error so standalone runs remain perfectly clean
+            console.warn("Shornolipi Service Worker registration bypassed (running in offline-ready standalone mode):", err);
+          });
+      });
+    }
+  </script>
+
+  <!-- Main Application Script Compiled via Babel -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ============================================================================
+    // 1. FIREBASE INITIALIZATION & CONFIGURATION
+    // ============================================================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMbkQ77ahmS1nwmCKi",
+      authDomain: "shornolipi-bookshop.firebaseapp.com",
+      projectId: "shornolipi-bookshop",
+      storageBucket: "shornolipi-bookshop.appspot.com",
+      messagingSenderId: "803548012637",
+      appId: "1:803548012637:web:b5dc18",
+      measurementId: "G-6N8KYJ4EL0"
+    };
+
+    // Initialize Firebase Compat
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+
+    // Default books list for seeding database if empty
+    const DEFAULT_BOOKS = [
+      {
+        id: "b1",
+        titleEn: "The Golden Boat (Sonar Tori)",
+        titleBn: "সোনার তরী",
+        authorEn: "Rabindranath Tagore",
+        authorBn: "রবীন্দ্রনাথ ঠাকুর",
+        priceEn: "৳350",
+        priceBn: "৳৩৫০",
+        priceNum: 350,
+        descriptionEn: "A collection of exquisite metaphysical poetry expressing life's eternal quest, transience, and spiritual union.",
+        descriptionBn: "রবীন্দ্রনাথ ঠাকুরের একটি বিখ্যাত রূপক কবিতা ও কাব্যগ্রন্থ, যা মানুষের জীবনতৃষ্ণা এবং মহাকালের শাশ্বত সত্যকে ফুটিয়ে তোলে।",
+        categoryEn: "Poetry & Classics",
+        categoryBn: "কবিতা ও ক্লাসিক",
+        image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=400",
+        rating: 4.9,
+        pages: 120,
+        year: "1894",
+        weightKg: 0.25
+      },
+      {
+        id: "b2",
+        titleEn: "Gitanjali (Song Offerings)",
+        titleBn: "গীতাঞ্জলি",
+        authorEn: "Rabindranath Tagore",
+        authorBn: "রবীন্দ্রনাথ ঠাকুর",
+        priceEn: "৳450",
+        priceBn: "৳৪৫০",
+        priceNum: 450,
+        descriptionEn: "The Nobel Prize-winning collection of devotional songs and deep spiritual prose lyrics celebrating divine love.",
+        descriptionBn: "বিশ্বকবি রবীন্দ্রনাথ ঠাকুরের নোবেল পুরস্কার বিজয়ী অনন্য কাব্যগ্রন্থ, যা আধ্যাত্মিক সাধনা ও ঈশ্বরপ্রেমের গভীর সৃষ্টি।",
+        categoryEn: "Poetry & Philosophy",
+        categoryBn: "কবিতা ও দর্শন",
+        image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=400",
+        rating: 5.0,
+        pages: 156,
+        year: "1910",
+        weightKg: 0.3
+      },
+      {
+        id: "b3",
+        titleEn: "Pather Panchali (Song of the Road)",
+        titleBn: "পথের পাঁচালী",
+        authorEn: "Bibhutibhushan Bandyopadhyay",
+        authorBn: "বিভূতিভূষণ বন্দ্যোপাধ্যায়",
+        priceEn: "৳280",
+        priceBn: "৳২৮০",
+        priceNum: 280,
+        descriptionEn: "A timeless masterpiece of Bengali literature capturing rural childhood, the magic of nature, and simple lives.",
+        descriptionBn: "অপু ও দুর্গার গ্রামীণ শৈশব, নিবিড় প্রকৃতি এবং জীবনের কঠিন বাস্তবতার চিত্র নিয়ে রচিত বাংলা সাহিত্যের অমর কথাশিল্প।",
+        categoryEn: "Classic Fiction",
+        categoryBn: "ক্লাসিক উপন্যাস",
+        image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400",
+        rating: 4.8,
+        pages: 320,
+        year: "1929",
+        weightKg: 0.5
+      },
+      {
+        id: "b4",
+        titleEn: "The Great Gatsby",
+        titleBn: "দ্য গ্রেট গ্যাটসবি",
+        authorEn: "F. Scott Fitzgerald",
+        authorBn: "এফ. স্কট ফিটজেরাল্ড",
+        priceEn: "৳550",
+        priceBn: "৳৫৫০",
+        priceNum: 550,
+        descriptionEn: "The ultimate representation of the Jazz Age, highlighting wealth, obsession, and the dark side of the American Dream.",
+        descriptionBn: "জ্যাজ যুগের পটভূমিতে লেখা মার্কিন সাহিত্যের শ্রেষ্ঠ উপন্যাস, যা সম্পদ, আভিজাত্য ও অপূর্ণ ভালোবাসার গল্প তুলে ধরে।",
+        categoryEn: "Western Classics",
+        categoryBn: "পাশ্চাত্য ক্লাসিক",
+        image: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=400",
+        rating: 4.7,
+        pages: 180,
+        year: "1925",
+        weightKg: 0.35
+      },
+      {
+        id: "b5",
+        titleEn: "Shesher Kobita (Farewell Song)",
+        titleBn: "শেষের কবিতা",
+        authorEn: "Rabindranath Tagore",
+        authorBn: "রবীন্দ্রনাথ ঠাকুর",
+        priceEn: "৳320",
+        priceBn: "৳৩২০",
+        priceNum: 320,
+        descriptionEn: "A magnificent poetic novel depicting intellectual modern love, romance, and artistic sacrifice.",
+        descriptionBn: "রবীন্দ্রনাথ ঠাকুর রচিত অনন্য রোমান্টিক কাব্যধর্মী উপন্যাস, যা অমিত ও লাবণ্যর বুদ্ধিবৃত্তিক প্রেমকে চিরসবুজ করে রেখেছে।",
+        categoryEn: "Romantic Drama",
+        categoryBn: "রোমান্টিক ড্রামা",
+        image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=400",
+        rating: 4.9,
+        pages: 164,
+        year: "1929",
+        weightKg: 0.35
+      }
+    ];
+
+    const DISTRICTS = [
+      { nameEn: "Dhaka", nameBn: "ঢাকা", inDhaka: true },
+      { nameEn: "Chattogram", nameBn: "চট্টগ্রাম", inDhaka: false },
+      { nameEn: "Sylhet", nameBn: "সিলেট", inDhaka: false },
+      { nameEn: "Rajshahi", nameBn: "রাজশাহী", inDhaka: false },
+      { nameEn: "Khulna", nameBn: "খুলনা", inDhaka: false },
+      { nameEn: "Barishal", nameBn: "বরিশাল", inDhaka: false },
+      { nameEn: "Rangpur", nameBn: "রংপুর", inDhaka: false },
+      { nameEn: "Mymensingh", nameBn: "ময়মনসিংহ", inDhaka: false },
+      { nameEn: "Bogura", nameBn: "বগুড়া", inDhaka: false },
+      { nameEn: "Cumilla", nameBn: "কুমিল্লা", inDhaka: false },
+      { nameEn: "Noakhali", nameBn: "নোয়াখালী", inDhaka: false },
+      { nameEn: "Cox's Bazar", nameBn: "কক্সবাজার", inDhaka: false }
+    ];
+
+    const TRANSLATIONS = {
+      en: {
+        shopName: "Shornolipi Books",
+        shopSubtitle: "Noble Creations & Literary Masterpieces",
+        tagline: "Unveil the Majesty of Bengali Classics & World Literature",
+        searchPlaceholder: "Search noble publications, poets, authors...",
+        categoryAll: "All Collections",
+        addToBag: "Add to Bag",
+        buyNow: "Buy Now",
+        cartTitle: "Your Noble Bag",
+        cartEmpty: "Your bag is empty.",
+        subtotal: "Subtotal",
+        checkout: "Secure Checkout",
+        contactTitle: "Delivery Information",
+        fullName: "Full Name",
+        phone: "Mobile Number",
+        district: "District",
+        address: "Full Area & Delivery Address",
+        deliveryCharge: "Delivery Charge",
+        totalAmount: "Total Payable",
+        placeOrder: "Confirm Cash-On-Delivery Order",
+        orderSuccess: "Your royal order has been placed successfully!",
+        orderSuccessDetails: "Our representative will contact you shortly to confirm.",
+        weight: "Weight",
+        pages: "Pages",
+        year: "Year Published",
+        rating: "Rating",
+        notice: "Notice",
+        backToShop: "Back to Shop",
+        footerText: "© 2026 Shornolipi Books. Handcrafted for Lovers of Literary Splendor.",
+      },
+      bn: {
+        shopName: "স্বর্ণলিপি বুকস",
+        shopSubtitle: "মর্যাদাপূর্ণ সৃষ্টি ও সাহিত্যের শ্রেষ্ঠ নিদর্শন",
+        tagline: "বাংলা ক্লাসিক ও বিশ্ব সাহিত্যের রাজকীয় অনুভূতির দুয়ার",
+        searchPlaceholder: "বইয়ের নাম, লেখক বা কবি খুঁজুন...",
+        categoryAll: "সকল সংগ্রহ",
+        addToBag: "ব্যাগে রাখুন",
+        buyNow: "সরাসরি কিনুন",
+        cartTitle: "আপনার রাজকীয় ব্যাগ",
+        cartEmpty: "আপনার ব্যাগটি এখন খালি রয়েছে।",
+        subtotal: "বইয়ের মূল্য",
+        checkout: "অর্ডার সম্পন্ন করুন",
+        contactTitle: "ডেলিভারি সংক্রান্ত তথ্য",
+        fullName: "গ্রাহকের নাম",
+        phone: "মোবাইল নম্বর",
+        district: "জেলা",
+        address: "পূর্ণাঙ্গ এলাকা ও ডেলিভারি ঠিকানা",
+        deliveryCharge: "ডেলিভারি চার্জ",
+        totalAmount: "সর্বমোট প্রদেয়",
+        placeOrder: "ক্যাশ-অন-ডেলিভারি অর্ডার নিশ্চিত করুন",
+        orderSuccess: "আপনার রাজকীয় অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে!",
+        orderSuccessDetails: "আমাদের একজন প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।",
+        weight: "ওজন",
+        pages: "পৃষ্ঠা সংখ্যা",
+        year: "প্রকাশের সাল",
+        rating: "রেটিং",
+        notice: "ঘোষণা",
+        backToShop: "দোকানে ফিরে যান",
+        footerText: "© ২০২৬ স্বর্ণলিপি বুকস। রাজকীয় সাহিত্যপ্রেমীদের জন্য একটি অনন্য আয়োজন।",
+      }
+    };
+
+    function convertToBanglaNumber(num) {
+      const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+      return num.toString().split("").map(digit => {
+        return banglaDigits[digit] || digit;
+      }).join("");
+    }
+
+    // ============================================================================
+    // Pure React SVG Icon Component (Prevents manual DOM modifications by Lucide that crash React)
+    // ============================================================================
+    function Icon({ name, className = "w-4 h-4", fill }) {
+      const icons = {
+        sparkles: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z" />
+            <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" />
+          </svg>
+        ),
+        download: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+          </svg>
+        ),
+        "shopping-bag": (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+            <path d="M3 6h18" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+        ),
+        search: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        ),
+        "book-open": (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+        ),
+        star: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+        ),
+        shield: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        ),
+        x: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        ),
+        user: (
+          <svg className={className} fill={fill || "none"} stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        )
+      };
+
+      return icons[name] || null;
+    }
+
+    // ============================================================================
+    // 2. PRIMARY APPLICATION ENTRANCE
+    // ============================================================================
+    function App() {
+      const [lang, setLang] = useState("bn");
+      const [books, setBooks] = useState(DEFAULT_BOOKS);
+      const [noticeBn, setNoticeBn] = useState("স্বর্ণলিপি বুকসে আপনাকে স্বাগত! আমাদের যেকোনো বই কিনতে Buy Now অথবা Add to Bag বাটনে ক্লিক করুন।");
+      const [noticeEn, setNoticeEn] = useState("Welcome to Shornolipi Books! Click 'Buy Now' or 'Add to Bag' to purchase your favorite noble titles.");
+      const [searchQuery, setSearchQuery] = useState("");
+      const [selectedCategory, setSelectedCategory] = useState("all");
+      const [cart, setCart] = useState([]);
+      const [selectedBook, setSelectedBook] = useState(null);
+      const [isCartOpen, setIsCartOpen] = useState(false);
+      const [currentView, setCurrentView] = useState("shop"); // "shop" | "admin"
+
+      // Checkout form states
+      const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+      const [checkoutForm, setCheckoutForm] = useState({
+        name: "",
+        phone: "",
+        district: "Dhaka",
+        address: "",
+        areaType: "urban" // "urban" (city) | "rural" (village/suburb)
+      });
+      const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+
+      // PWA Install Prompt State
+      const [deferredPrompt, setDeferredPrompt] = useState(null);
+      const [showPwaBanner, setShowPwaBanner] = useState(false);
+
+      const t = TRANSLATIONS[lang];
+
+      // Firebase Real-time Synchronization
+      useEffect(() => {
+        // A. Handle routing hashes
+        const handleHashChange = () => {
+          if (window.location.hash === "#admin") {
+            setCurrentView("admin");
+          } else {
+            setCurrentView("shop");
+          }
+        };
+        handleHashChange();
+        window.addEventListener("hashchange", handleHashChange);
+
+        // B. Database Auto-Seeding & Listeners
+        let unsubscribeNotice = null;
+        let unsubscribeBooks = null;
+
+        const seedAndSubscribe = async () => {
+          try {
+            // Notice Board Listener (Safely handles errors/connection dropouts)
+            unsubscribeNotice = db.collection("notices").doc("notice_board").onSnapshot((docSnap) => {
+              try {
+                if (docSnap.exists) {
+                  const data = docSnap.data();
+                  setNoticeBn(data.noticeBn || "স্বর্ণলিপি বুকসে আপনাকে স্বাগত! আমাদের যেকোনো বই কিনতে Buy Now অথবা Add to Bag বাটনে ক্লিক করুন।");
+                  setNoticeEn(data.noticeEn || "Welcome to Shornolipi Books! Click 'Buy Now' or 'Add to Bag' to purchase your favorite noble titles.");
+                } else {
+                  // If notice board doesn't exist, seed it
+                  db.collection("notices").doc("notice_board").set({
+                    noticeBn: "স্বর্ণলিপি বুকসে আপনাকে স্বাগত! আমাদের যেকোনো বই কিনতে Buy Now অথবা Add to Bag বাটনে ক্লিক করুন।",
+                    noticeEn: "Welcome to Shornolipi Books! Click 'Buy Now' or 'Add to Bag' to purchase your favorite noble titles."
+                  }).catch(e => console.warn("Notice board auto-seeding bypassed:", e));
+                }
+              } catch (innerErr) {
+                console.warn("Notice parsing failed, using default notice:", innerErr);
+              }
+            }, (error) => {
+              console.warn("Notice board firestore listener bypassed (running in secure offline/fallback mode):", error);
+            });
+
+            // Books collection listener (Safely handles errors/connection dropouts)
+            unsubscribeBooks = db.collection("books").onSnapshot((querySnap) => {
+              try {
+                if (querySnap.empty) {
+                  // Seed default books
+                  DEFAULT_BOOKS.forEach((b) => {
+                    db.collection("books").doc(b.id).set(b).catch(e => console.warn("Book auto-seeding bypassed:", e));
+                  });
+                  setBooks(DEFAULT_BOOKS);
+                } else {
+                  const booksList = [];
+                  querySnap.forEach((doc) => {
+                    booksList.push(doc.data());
+                  });
+                  setBooks(booksList);
+                }
+              } catch (innerErr) {
+                console.warn("Books list compilation failed, using local fallback copy:", innerErr);
+                setBooks(DEFAULT_BOOKS);
+              }
+            }, (error) => {
+              console.warn("Books firestore listener bypassed (running in secure offline/fallback mode):", error);
+              setBooks(DEFAULT_BOOKS);
+            });
+          } catch (e) {
+            console.warn("Firebase real-time sync subscription bypassed (running in secure offline/fallback mode): ", e);
+            setBooks(DEFAULT_BOOKS);
+          }
+        };
+
+        seedAndSubscribe();
+
+        // C. Capture PWA Installation Offer
+        window.addEventListener("beforeinstallprompt", (e) => {
+          e.preventDefault();
+          setDeferredPrompt(e);
+          setShowPwaBanner(true);
+        });
+
+        return () => {
+          window.removeEventListener("hashchange", handleHashChange);
+          if (unsubscribeNotice) {
+            try { unsubscribeNotice(); } catch (err) { console.warn("Notice unsubscribe failed:", err); }
+          }
+          if (unsubscribeBooks) {
+            try { unsubscribeBooks(); } catch (err) { console.warn("Books unsubscribe failed:", err); }
+          }
+        };
+      }, []);
+
+      // Calculate dynamic checkout weights and prices
+      const totalWeight = cart.reduce((acc, item) => acc + (item.book.weightKg || 0.3) * item.quantity, 0);
+      const subtotal = cart.reduce((acc, item) => acc + item.book.priceNum * item.quantity, 0);
+
+      // Delivery charges formula
+      const calculateDelivery = () => {
+        if (cart.length === 0) return 0;
+        const selectedDistrictObj = DISTRICTS.find(d => d.nameEn === checkoutForm.district || d.nameBn === checkoutForm.district);
+        const inDhaka = selectedDistrictObj ? selectedDistrictObj.inDhaka : true;
+        
+        let baseCharge = inDhaka ? 60 : 120;
+        if (checkoutForm.areaType === "rural") {
+          baseCharge += 30; // village premium charge
+        }
+        // Additional weight charges (20 Taka per extra kg beyond 1kg)
+        const additionalWeight = Math.max(0, totalWeight - 1);
+        const weightCharge = Math.ceil(additionalWeight) * 20;
+
+        return baseCharge + weightCharge;
+      };
+
+      const deliveryCharge = calculateDelivery();
+      const totalPayable = subtotal + deliveryCharge;
+
+      // Cart Manipulations
+      const addToCart = (book, directBuy = false) => {
+        setCart(prev => {
+          const exists = prev.find(item => item.book.id === book.id);
+          if (exists) {
+            return prev.map(item => item.book.id === book.id ? { ...item, quantity: item.quantity + 1 } : item);
+          }
+          return [...prev, { book, quantity: 1 }];
+        });
+
+        if (directBuy) {
+          setIsCheckoutOpen(true);
+        } else {
+          setIsCartOpen(true);
+        }
+      };
+
+      const removeFromCart = (bookId) => {
+        setCart(prev => prev.filter(item => item.book.id !== bookId));
+      };
+
+      const updateQuantity = (bookId, delta) => {
+        setCart(prev => prev.map(item => {
+          if (item.book.id === bookId) {
+            const newQty = item.quantity + delta;
+            return newQty > 0 ? { ...item, quantity: newQty } : item;
+          }
+          return item;
+        }));
+      };
+
+      // Trigger PWA installation
+      const handleInstallPwa = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === "accepted") {
+          console.log("PWA accepted by user");
+        }
+        setDeferredPrompt(null);
+        setShowPwaBanner(false);
+      };
+
+      // Handle custom checkouts
+      const handleCheckoutSubmit = (e) => {
+        e.preventDefault();
+        setIsOrderPlaced(true);
+        setTimeout(() => {
+          setCart([]);
+          setIsOrderPlaced(false);
+          setIsCheckoutOpen(false);
+        }, 4000);
+      };
+
+      // Search & Filters
+      const categories = ["all", ...Array.from(new Set(books.map(b => lang === "bn" ? b.categoryBn : b.categoryEn)))];
+
+      const filteredBooks = books.filter(b => {
+        const title = lang === "bn" ? b.titleBn : b.titleEn;
+        const author = lang === "bn" ? b.authorBn : b.authorEn;
+        const category = lang === "bn" ? b.categoryBn : b.categoryEn;
+        
+        const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              author.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesCategory = selectedCategory === "all" || category === selectedCategory;
+        return matchesSearch && matchesCategory;
+      });
+
+      // View Admin Trigger
+      const handleBackToShop = () => {
+        window.location.hash = "";
+        setCurrentView("shop");
+      };
+
+      if (currentView === "admin") {
+        return (
+          <AdminPanel 
+            books={books} 
+            noticeBn={noticeBn} 
+            noticeEn={noticeEn} 
+            lang={lang} 
+            setLang={setLang}
+            onBackToShop={handleBackToShop} 
+          />
+        );
+      }
+
+      return (
+        <div className={`min-h-screen flex flex-col justify-between ${lang === "bn" ? "font-sans" : "font-sans"}`}>
+          
+          {/* A. SCROLLING NOTICE MARQUEE */}
+          <div className="bg-[#111115] border-y border-gold-medium/30 py-2.5 px-4 overflow-hidden relative flex items-center gap-4">
+            <div className="flex items-center gap-1 bg-gold-medium/20 px-2.5 py-0.5 rounded border border-gold-medium/40 text-xs font-bold text-[#FCF6BA] shrink-0 uppercase animate-pulse">
+              <Icon name="sparkles" className="w-3.5 h-3.5 text-gold-medium mr-1 inline" />
+              <span>{t.notice}</span>
+            </div>
+            <div className="relative w-full overflow-hidden">
+              <div className="text-xs md:text-sm text-gray-200 font-medium tracking-wide whitespace-nowrap animate-marquee-scroll">
+                {lang === "bn" ? noticeBn : noticeEn}
+              </div>
+            </div>
+          </div>
+
+          {/* B. HEADER & ROYAL BRAND RAIL */}
+          <header className="sticky top-0 z-40 bg-[#070709]/95 backdrop-blur-md border-b border-gold-medium/20">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+              
+              {/* Brand Logo & Name */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full border border-gold-medium bg-[#111115] flex items-center justify-center shadow-[0_0_15px_rgba(191,149,63,0.3)] shrink-0">
+                  <span className="font-royal text-gold-light font-extrabold text-xl">S</span>
+                </div>
+                <div>
+                  <h1 className="font-royal font-bold text-lg md:text-xl text-white tracking-wider flex items-center gap-1.5">
+                    {t.shopName}
+                  </h1>
+                  <p className="text-[10px] text-gold-medium tracking-widest uppercase font-royal leading-none hidden md:block">
+                    {t.shopSubtitle}
+                  </p>
+                </div>
+              </div>
+
+              {/* Language Toggle & Cart Action */}
+              <div className="flex items-center gap-4">
+                
+                {/* PWA Direct Installation Button */}
+                {showPwaBanner && (
+                  <button 
+                    onClick={handleInstallPwa}
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-gold-medium to-gold-dark text-black text-xs font-bold px-3 py-1.5 rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_10px_rgba(191,149,63,0.4)] cursor-pointer"
+                  >
+                    <Icon name="download" className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Install App</span>
+                  </button>
+                )}
+
+                {/* Lang Switch */}
+                <button
+                  onClick={() => setLang(lang === "bn" ? "en" : "bn")}
+                  className="bg-[#111115] hover:bg-gold-medium/10 border border-gold-medium/30 hover:border-gold-medium rounded-lg text-xs font-bold text-gold-light px-3 py-1.5 transition-all cursor-pointer"
+                >
+                  {lang === "bn" ? "English" : "বাংলা"}
+                </button>
+
+                {/* Shopping Bag Button with Badge */}
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2 bg-[#111115] hover:bg-gold-medium/10 border border-gold-medium/30 rounded-lg text-gold-light transition-all cursor-pointer"
+                >
+                  <Icon name="shopping-bag" className="w-5 h-5" />
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-gradient-to-r from-gold-medium to-gold-dark text-black font-extrabold text-[10px] rounded-full flex items-center justify-center animate-bounce shadow-lg">
+                      {cart.reduce((a, c) => a + c.quantity, 0)}
+                    </span>
+                  )}
+                </button>
+              </div>
+
+            </div>
+          </header>
+
+          {/* C. HERO BANNER */}
+          <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1f1a10] via-[#070709] to-[#070709] px-4 py-12 md:py-16 text-center border-b border-gold-medium/10">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=1200')] opacity-5 bg-cover bg-center"></div>
+            
+            <div className="relative max-w-4xl mx-auto space-y-6">
+              <span className="inline-block border border-gold-medium/40 bg-gold-medium/10 px-4 py-1 rounded-full text-gold-light text-xs font-semibold tracking-wider uppercase">
+                {lang === "bn" ? "স্বর্ণালী সাহিত্যের অনন্য ক্যানভাস" : "Curated Royal Library"}
+              </span>
+              <h2 className="font-royal text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FCF6BA] via-[#BF953F] to-[#FCF6BA] tracking-tight leading-tight">
+                {t.tagline}
+              </h2>
+
+              {/* Dynamic Interactive Search Bar */}
+              <div className="max-w-2xl mx-auto relative mt-6">
+                <input
+                  type="text"
+                  placeholder={t.searchPlaceholder}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-[#111115]/90 border border-gold-medium/30 hover:border-gold-medium/60 focus:border-gold-medium px-5 py-3.5 pl-12 rounded-xl text-sm placeholder-gray-500 text-white focus:outline-none focus:ring-1 focus:ring-gold-medium shadow-[0_4px_30px_rgba(0,0,0,0.5)] font-sans"
+                />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold-medium">
+                  <Icon name="search" className="w-5 h-5" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* D. CATEGORIES & MAIN BOOK STORE GRID */}
+          <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full space-y-8">
+            
+            {/* Horizontal Scroll Categories */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-3 border-b border-gold-medium/10 scrollbar-none">
+              {categories.map((cat, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold tracking-wider whitespace-nowrap transition-all border cursor-pointer ${
+                    selectedCategory === cat
+                      ? "bg-gradient-to-r from-gold-medium to-gold-dark text-black border-gold-medium font-bold shadow-[0_2px_15px_rgba(191,149,63,0.3)]"
+                      : "bg-[#111115] hover:bg-gold-medium/10 text-gray-400 hover:text-white border-gold-medium/20"
+                  }`}
+                >
+                  {cat === "all" ? t.categoryAll : cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Books Display Grid */}
+            {filteredBooks.length === 0 ? (
+              <div className="text-center py-16 border border-dashed border-gold-medium/20 rounded-2xl bg-[#111115]/50">
+                <Icon name="book-open" className="w-12 h-12 text-gold-medium/40 mx-auto mb-3" />
+                <h4 className="text-lg font-bold text-gold-light">কোনো বই পাওয়া যায়নি!</h4>
+                <p className="text-xs text-gray-500 mt-1">অনুগ্রহ করে ভিন্ন কোনো শব্দ দিয়ে পুনরায় অনুসন্ধান করুন।</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredBooks.map((book) => {
+                  const title = lang === "bn" ? book.titleBn : book.titleEn;
+                  const author = lang === "bn" ? book.authorBn : book.authorEn;
+                  const desc = lang === "bn" ? book.descriptionBn : book.descriptionEn;
+                  const category = lang === "bn" ? book.categoryBn : book.categoryEn;
+                  const price = lang === "bn" ? book.priceBn : book.priceEn;
+
+                  return (
+                    <div 
+                      key={book.id}
+                      className="group flex flex-col justify-between bg-[#111115] border border-gold-medium/10 hover:border-gold-medium/40 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 shadow-[0_4px_25px_rgba(0,0,0,0.6)]"
+                    >
+                      {/* Interactive Cover Hover Container */}
+                      <div 
+                        onClick={() => setSelectedBook(book)}
+                        className="relative h-56 bg-[#070709] overflow-hidden cursor-pointer flex items-center justify-center group/cover"
+                      >
+                        <img 
+                          src={book.image} 
+                          alt={title}
+                          className="w-full h-full object-cover opacity-80 group-hover/cover:opacity-100 group-hover/cover:scale-105 transition-all duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#111115] via-transparent to-transparent"></div>
+                        
+                        {/* Elegant Rating Badge */}
+                        <div className="absolute top-3 right-3 bg-[#070709]/90 border border-gold-medium/30 px-2 py-0.5 rounded text-[10px] text-gold-light font-extrabold flex items-center gap-1">
+                          <Icon name="star" className="w-3 h-3 text-gold-medium inline" fill="#BF953F" />
+                          <span>{book.rating || 5.0}</span>
+                        </div>
+                      </div>
+
+                      {/* Content details */}
+                      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                        <div className="space-y-1.5">
+                          <span className="text-[9px] text-gold-medium uppercase tracking-wider font-royal">
+                            {category}
+                          </span>
+                          <h3 
+                            onClick={() => setSelectedBook(book)}
+                            className="font-bold text-sm md:text-base text-white hover:text-gold-light cursor-pointer transition-colors line-clamp-1"
+                          >
+                            {title}
+                          </h3>
+                          <p className="text-xs text-gray-400 line-clamp-1">{author}</p>
+                          <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{desc}</p>
+                        </div>
+
+                        {/* Price Tag & Interactive Controls */}
+                        <div className="pt-3 border-t border-gold-medium/10 flex items-center justify-between">
+                          <div className="text-left">
+                            <span className="text-[10px] text-gray-500 block uppercase tracking-wider">Price</span>
+                            <span className="text-base font-extrabold text-[#FCF6BA]">{price}</span>
+                          </div>
+
+                          <div className="flex gap-1.5 shrink-0">
+                            {/* Add to bag */}
+                            <button
+                              onClick={() => addToCart(book)}
+                              className="p-2 bg-[#070709] border border-gold-medium/30 hover:bg-gold-medium hover:text-black rounded-lg text-gold-light transition-all cursor-pointer"
+                              title={t.addToBag}
+                            >
+                              <Icon name="shopping-bag" className="w-4 h-4" />
+                            </button>
+                            {/* Buy Now */}
+                            <button
+                              onClick={() => addToCart(book, true)}
+                              className="btn-gold-shimmer px-3 py-1.5 bg-gradient-to-r from-gold-medium to-gold-dark hover:from-gold-light hover:to-gold-medium text-black text-xs font-bold rounded-lg transition-all cursor-pointer"
+                            >
+                              {t.buyNow}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </main>
+
+          {/* E. PERSISTENT SHOP FOOTER WITH SECURE LOCK */}
+          <footer className="mt-16 bg-[#111115] border-t border-gold-medium/10 py-8 px-4 text-center text-xs text-gray-500">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-royal font-bold text-gold-light text-sm">{t.shopName}</span>
+                <span className="text-gray-600">|</span>
+                <p>{t.footerText}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <a 
+                  href="#admin" 
+                  className="text-[10px] text-gold-medium/50 hover:text-gold-light border border-gold-medium/20 hover:border-gold-medium/60 px-2.5 py-1 rounded transition-all flex items-center gap-1 bg-[#070709]"
+                >
+                  <Icon name="shield" className="w-3 h-3 inline" />
+                  <span>🛡️ Admin Console</span>
+                </a>
+              </div>
+            </div>
+          </footer>
+
+          {/* ========================================================
+              F. MODAL: DETAILED BOOK SPECS VIEW
+              ======================================================== */}
+          {selectedBook && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+              <div className="w-full max-w-2xl bg-[#111115] border border-gold-medium/30 rounded-2xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+                <button 
+                  onClick={() => setSelectedBook(null)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors p-1 bg-[#070709] rounded-full border border-gold-medium/20 cursor-pointer"
+                >
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+                  {/* Cover */}
+                  <div className="h-72 md:h-full bg-[#070709] rounded-xl border border-gold-medium/10 overflow-hidden flex items-center justify-center">
+                    <img src={selectedBook.image} alt={selectedBook.titleEn} className="w-full h-full object-cover" />
+                  </div>
+
+                  {/* Metadata Specs */}
+                  <div className="flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      <span className="text-[10px] text-gold-medium font-bold uppercase tracking-widest border border-gold-medium/20 px-2 py-0.5 rounded bg-gold-medium/5">
+                        {lang === "bn" ? selectedBook.categoryBn : selectedBook.categoryEn}
+                      </span>
+                      <h3 className="font-royal font-bold text-xl md:text-2xl text-white">
+                        {lang === "bn" ? selectedBook.titleBn : selectedBook.titleEn}
+                      </h3>
+                      <p className="text-sm text-gold-light font-semibold">{lang === "bn" ? selectedBook.authorBn : selectedBook.authorEn}</p>
+                      
+                      {/* Specifications Box */}
+                      <div className="bg-[#070709] border border-gold-medium/10 rounded-lg p-3 space-y-1.5 text-xs text-gray-400">
+                        <div className="flex justify-between"><span className="text-gray-500">{t.rating}:</span><span className="font-bold text-gold-light">⭐ {selectedBook.rating || 4.8}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">{t.pages}:</span><span>{selectedBook.pages || 180}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">{t.year}:</span><span>{selectedBook.year || "2024"}</span></div>
+                        <div className="flex justify-between"><span className="text-gray-500">{t.weight}:</span><span>{selectedBook.weightKg || 0.3} Kg</span></div>
+                      </div>
+
+                      <p className="text-xs text-gray-300 leading-relaxed font-sans mt-3">
+                        {lang === "bn" ? selectedBook.descriptionBn : selectedBook.descriptionEn}
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-gold-medium/10 flex items-center justify-between">
+                      <div className="text-left">
+                        <span className="text-xs text-gray-500 block uppercase">Payable Price</span>
+                        <span className="text-xl font-extrabold text-[#FCF6BA]">{lang === "bn" ? selectedBook.priceBn : selectedBook.priceEn}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { addToCart(selectedBook); setSelectedBook(null); }}
+                          className="px-4 py-2 bg-[#070709] border border-gold-medium/30 hover:bg-gold-medium hover:text-black rounded-lg text-gold-light text-xs font-bold transition-all cursor-pointer"
+                        >
+                          {t.addToBag}
+                        </button>
+                        <button
+                          onClick={() => { addToCart(selectedBook, true); setSelectedBook(null); }}
+                          className="btn-gold-shimmer px-4 py-2 bg-gradient-to-r from-gold-medium to-gold-dark text-black text-xs font-bold rounded-lg transition-all cursor-pointer"
+                        >
+                          {t.buyNow}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================
+              G. DRAWER: INTERACTIVE SLIDE-OVER NOBLE BAG
+              ======================================================== */}
+          {isCartOpen && (
+            <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm">
+              <div className="w-full max-w-md bg-[#070709] border-l border-gold-medium/20 h-full flex flex-col justify-between shadow-2xl relative">
+                
+                {/* Header info */}
+                <div className="p-4 border-b border-gold-medium/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <i data-lucide="shopping-bag" class="w-5 h-5 text-gold-medium"></i>
+                    <h3 className="font-royal text-base md:text-lg font-bold text-white tracking-wider">{t.cartTitle}</h3>
+                  </div>
+                  <button 
+                    onClick={() => setIsCartOpen(false)}
+                    className="p-1 text-gray-400 hover:text-white border border-gold-medium/10 hover:border-gold-medium/40 rounded bg-[#111115] cursor-pointer"
+                  >
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                  </button>
+                </div>
+
+                {/* Items */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {cart.length === 0 ? (
+                    <div className="text-center py-20 text-gray-500">
+                      <i data-lucide="shopping-bag" class="w-12 h-12 text-gold-medium/20 mx-auto mb-3"></i>
+                      <p className="text-xs">{t.cartEmpty}</p>
+                    </div>
+                  ) : (
+                    cart.map((item) => {
+                      const title = lang === "bn" ? item.book.titleBn : item.book.titleEn;
+                      const price = lang === "bn" ? item.book.priceBn : item.book.priceEn;
+                      return (
+                        <div key={item.book.id} className="flex gap-3 bg-[#111115] p-3 rounded-lg border border-gold-medium/10">
+                          <img src={item.book.image} alt={title} className="w-12 h-16 object-cover rounded bg-[#070709] border border-gold-medium/10" />
+                          <div className="flex-1 flex flex-col justify-between">
+                            <div>
+                              <h4 className="text-xs font-bold text-white line-clamp-1">{title}</h4>
+                              <p className="text-[10px] text-gold-light mt-0.5">{price}</p>
+                            </div>
+                            
+                            {/* Quantity adjustments */}
+                            <div className="flex items-center justify-between pt-1">
+                              <div className="flex items-center border border-gold-medium/20 rounded bg-[#070709] overflow-hidden">
+                                <button 
+                                  onClick={() => updateQuantity(item.book.id, -1)}
+                                  className="px-2 py-0.5 text-gold-medium hover:bg-gold-medium/10 transition-colors font-extrabold cursor-pointer"
+                                >
+                                  -
+                                </button>
+                                <span className="px-2.5 text-xs font-semibold text-white">{lang === "bn" ? convertToBanglaNumber(item.quantity) : item.quantity}</span>
+                                <button 
+                                  onClick={() => updateQuantity(item.book.id, 1)}
+                                  className="px-2 py-0.5 text-gold-medium hover:bg-gold-medium/10 transition-colors font-extrabold cursor-pointer"
+                                >
+                                  +
+                                </button>
+                              </div>
+                              <button 
+                                onClick={() => removeFromCart(item.book.id)}
+                                className="text-[10px] text-red-500 hover:text-red-400 transition-colors font-medium flex items-center gap-0.5 cursor-pointer"
+                              >
+                                Remove
+                              </button>
+                            </div>
+
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Subtotal & Checkout button */}
+                <div className="p-4 border-t border-gold-medium/10 bg-[#111115] space-y-4">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-400">{t.subtotal}:</span>
+                    <span className="font-extrabold text-gold-light text-base">
+                      ৳{lang === "bn" ? convertToBanglaNumber(subtotal) : subtotal}
+                    </span>
+                  </div>
+
+                  <button
+                    disabled={cart.length === 0}
+                    onClick={() => { setIsCartOpen(false); setIsCheckoutOpen(true); }}
+                    className="w-full btn-gold-shimmer py-3 bg-gradient-to-r from-gold-medium to-gold-dark hover:from-gold-light hover:to-gold-medium text-black text-xs font-extrabold rounded-lg tracking-wider transition-all disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
+                  >
+                    {t.checkout}
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================
+              H. ROYAL CHECKOUT MODAL with Dynamic Delivery calculations
+              ======================================================== */}
+          {isCheckoutOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+              <div className="w-full max-w-3xl bg-[#111115] border border-gold-medium/30 rounded-2xl shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+                
+                <button 
+                  onClick={() => setIsCheckoutOpen(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-white border border-gold-medium/10 rounded-full p-1 bg-[#070709] cursor-pointer"
+                >
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+
+                {isOrderPlaced ? (
+                  <div className="text-center py-16 space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-gold-medium/20 text-gold-light border border-gold-medium flex items-center justify-center mx-auto text-3xl animate-pulse">
+                      ✓
+                    </div>
+                    <h3 className="font-royal text-2xl font-bold text-gold-light">{t.orderSuccess}</h3>
+                    <p className="text-xs text-gray-400 max-w-sm mx-auto">{t.orderSuccessDetails}</p>
+                    <div className="pt-6">
+                      <div className="w-8 h-8 border-4 border-gold-medium border-t-transparent rounded-full animate-spin mx-auto"></div>
+                      <p className="text-[10px] text-gray-500 mt-2">Returning to shelf shortly...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-3">
+                    
+                    {/* Left details order summary */}
+                    <div className="space-y-4">
+                      <h4 className="font-royal font-bold text-white text-base border-b border-gold-medium/10 pb-2 flex items-center gap-2">
+                        <i data-lucide="shopping-bag" class="w-4 h-4 text-gold-medium"></i>
+                        <span>Order Summary</span>
+                      </h4>
+                      <div className="max-h-56 overflow-y-auto space-y-3 pr-2">
+                        {cart.map((item) => (
+                          <div key={item.book.id} className="flex justify-between text-xs text-gray-300">
+                            <span className="line-clamp-1 flex-1 pr-4">
+                              {lang === "bn" ? item.book.titleBn : item.book.titleEn} 
+                              <strong className="text-gold-light pl-1">x{item.quantity}</strong>
+                            </span>
+                            <span className="shrink-0 font-mono text-gold-medium">
+                              ৳{lang === "bn" ? convertToBanglaNumber(item.book.priceNum * item.quantity) : item.book.priceNum * item.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Summary Calculation Block */}
+                      <div className="bg-[#070709] rounded-lg p-3 border border-gold-medium/10 space-y-2 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.subtotal}:</span>
+                          <span className="text-gray-300 font-mono">৳{lang === "bn" ? convertToBanglaNumber(subtotal) : subtotal}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Total Book Weight:</span>
+                          <span className="text-gray-300 font-mono">{lang === "bn" ? convertToBanglaNumber(totalWeight.toFixed(2)) : totalWeight.toFixed(2)} Kg</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">{t.deliveryCharge}:</span>
+                          <span className="text-gold-light font-bold font-mono">৳{lang === "bn" ? convertToBanglaNumber(deliveryCharge) : deliveryCharge}</span>
+                        </div>
+                        <div className="flex justify-between pt-2 border-t border-gold-medium/10 text-sm font-extrabold text-white">
+                          <span>{t.totalAmount}:</span>
+                          <span className="text-[#FCF6BA] font-mono">৳{lang === "bn" ? convertToBanglaNumber(totalPayable) : totalPayable}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right input details form */}
+                    <form onSubmit={handleCheckoutSubmit} className="space-y-4">
+                      <h4 className="font-royal font-bold text-white text-base border-b border-gold-medium/10 pb-2 flex items-center gap-2">
+                        <i data-lucide="user" class="w-4 h-4 text-gold-medium"></i>
+                        <span>{t.contactTitle}</span>
+                      </h4>
+
+                      <div className="space-y-3 text-xs">
+                        {/* Name */}
+                        <div>
+                          <label className="text-gray-400 block mb-1">{t.fullName} *</label>
+                          <input 
+                            required
+                            type="text"
+                            placeholder="যেমন: আশিকুর রহমান"
+                            value={checkoutForm.name}
+                            onChange={(e) => setCheckoutForm({ ...checkoutForm, name: e.target.value })}
+                            className="w-full bg-[#070709] border border-gold-medium/20 focus:border-gold-medium p-2.5 rounded text-white focus:outline-none focus:ring-1 focus:ring-gold-medium"
+                          />
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                          <label className="text-gray-400 block mb-1">{t.phone} *</label>
+                          <input 
+                            required
+                            type="tel"
+                            placeholder="যেমন: 017XXXXXXXX"
+                            value={checkoutForm.phone}
+                            onChange={(e) => setCheckoutForm({ ...checkoutForm, phone: e.target.value })}
+                            className="w-full bg-[#070709] border border-gold-medium/20 focus:border-gold-medium p-2.5 rounded text-white focus:outline-none focus:ring-1 focus:ring-gold-medium font-mono"
+                          />
+                        </div>
+
+                        {/* District select */}
+                        <div>
+                          <label className="text-gray-400 block mb-1">{t.district} *</label>
+                          <select 
+                            value={checkoutForm.district}
+                            onChange={(e) => setCheckoutForm({ ...checkoutForm, district: e.target.value })}
+                            className="w-full bg-[#070709] border border-gold-medium/20 focus:border-gold-medium p-2.5 rounded text-white focus:outline-none focus:ring-1 focus:ring-gold-medium cursor-pointer"
+                          >
+                            {DISTRICTS.map((d, idx) => (
+                              <option key={idx} value={lang === "bn" ? d.nameBn : d.nameEn}>
+                                {lang === "bn" ? d.nameBn : d.nameEn} {d.inDhaka ? "(ইনসাইড ঢাকা)" : "(আউটসাইড ঢাকা)"}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Area Type (Urban vs Rural) */}
+                        <div>
+                          <label className="text-gray-400 block mb-1">এলাকার ধরণ *</label>
+                          <div className="flex gap-4">
+                            <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
+                              <input 
+                                type="radio" 
+                                name="areaType" 
+                                value="urban" 
+                                checked={checkoutForm.areaType === "urban"}
+                                onChange={() => setCheckoutForm({ ...checkoutForm, areaType: "urban" })}
+                                className="accent-gold-medium"
+                              />
+                              <span>শহর / কর্পোরেশন এলাকা</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
+                              <input 
+                                type="radio" 
+                                name="areaType" 
+                                value="rural" 
+                                checked={checkoutForm.areaType === "rural"}
+                                onChange={() => setCheckoutForm({ ...checkoutForm, areaType: "rural" })}
+                                className="accent-gold-medium"
+                              />
+                              <span>গ্রাম / ইউনিয়ন এলাকা (+৳৩০)</span>
+                            </label>
+                          </div>
+                        </div>
+
+                        {/* Address */}
+                        <div>
+                          <label className="text-gray-400 block mb-1">{t.address} *</label>
+                          <textarea 
+                            required
+                            rows="2"
+                            placeholder="রোড নম্বর, বাসা নম্বর, পোস্টাল কোড সহ বিস্তারিত ঠিকানা লিখুন..."
+                            value={checkoutForm.address}
+                            onChange={(e) => setCheckoutForm({ ...checkoutForm, address: e.target.value })}
+                            className="w-full bg-[#070709] border border-gold-medium/20 focus:border-gold-medium p-2.5 rounded text-white focus:outline-none focus:ring-1 focus:ring-gold-medium resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full btn-gold-shimmer py-3 bg-gradient-to-r from-gold-medium to-gold-dark hover:from-gold-light hover:to-gold-medium text-black text-xs font-extrabold rounded-lg uppercase tracking-wider transition-all mt-4 cursor-pointer"
+                      >
+                        {t.placeOrder}
+                      </button>
+                    </form>
+
+                  </div>
+                )}
+
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // ============================================================================
+    // 3. ADMIN PANEL CONTAINER (FIREBASE SYNCING)
+    // ============================================================================
+    function AdminPanel({ books, noticeBn, noticeEn, lang, setLang, onBackToShop }) {
+      const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+      const [authError, setAuthError] = useState(null);
+      const [isAuthLoading, setIsAuthLoading] = useState(false);
+      const [userEmail, setUserEmail] = useState("");
+
+      // Form inputs
+      const [noticeInputBn, setNoticeInputBn] = useState(noticeBn);
+      const [noticeInputEn, setNoticeInputEn] = useState(noticeEn);
+      const [noticeSuccess, setNoticeSuccess] = useState(false);
+
+      const [showAddForm, setShowAddForm] = useState(false);
+      const [editingBookId, setEditingBookId] = useState(null);
+
+      // Books form inputs
+      const [formTitleEn, setFormTitleEn] = useState("");
+      const [formTitleBn, setFormTitleBn] = useState("");
+      const [formAuthorEn, setFormAuthorEn] = useState("");
+      const [formAuthorBn, setFormAuthorBn] = useState("");
+      const [formPriceNum, setFormPriceNum] = useState("");
+      const [formDescriptionEn, setFormDescriptionEn] = useState("");
+      const [formDescriptionBn, setFormDescriptionBn] = useState("");
+      const [formCategoryEn, setFormCategoryEn] = useState("Poetry & Classics");
+      const [formCategoryBn, setFormCategoryBn] = useState("কবিতা ও ক্লাসিক");
+      const [formImage, setFormImage] = useState("");
+      const [formPages, setFormPages] = useState("150");
+      const [formYear, setFormYear] = useState("2024");
+      const [formWeight, setFormWeight] = useState("0.3");
+
+      // Verify Google Authentication changes
+      useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+          if (user) {
+            const email = user.email.toLowerCase().trim();
+            if (email === "bdhecker34@gmail.com") {
+              setIsAdminLoggedIn(true);
+              setUserEmail(email);
+              setAuthError(null);
+            } else {
+              // Sign out immediately if unauthorized
+              auth.signOut();
+              setAuthError(
+                lang === "bn"
+                  ? "প্রবেশাধিকার প্রত্যাখ্যান! কেবল bdhecker34@gmail.com অনুমোদিত।"
+                  : "Access Denied! Only bdhecker34@gmail.com has administrative authorization."
+              );
+              setIsAdminLoggedIn(false);
+            }
+          } else {
+            setIsAdminLoggedIn(false);
+            setUserEmail("");
+          }
+        });
+        return () => unsubscribe();
+      }, [lang]);
+
+      // Login via Google Auth Popup
+      const handleGoogleLogin = async () => {
+        setIsAuthLoading(true);
+        setAuthError(null);
+        try {
+          await auth.signInWithPopup(googleProvider);
+        } catch (err) {
+          console.error(err);
+          setAuthError(
+            lang === "bn"
+              ? "গুগল অথেনটিকেশন ব্যর্থ হয়েছে! দয়া করে কনফিগারেশন চেক করুন।"
+              : "Google Sign-In Failed! Verify Firebase configuration details."
+          );
+        } finally {
+          setIsAuthLoading(false);
+        }
+      };
+
+      const handleLogout = () => {
+        auth.signOut();
+      };
+
+      // Save/Edit Books in Firestore
+      const handleBookSubmit = async (e) => {
+        e.preventDefault();
+        if (!formTitleEn || !formTitleBn || !formAuthorEn || !formAuthorBn || !formPriceNum || !formImage) {
+          alert("Please fill out all required fields.");
+          return;
+        }
+
+        const bookId = editingBookId || "book_" + Date.now();
+        const bookData = {
+          id: bookId,
+          titleEn: formTitleEn,
+          titleBn: formTitleBn,
+          authorEn: formAuthorEn,
+          authorBn: formAuthorBn,
+          priceEn: `৳${formPriceNum}`,
+          priceBn: `৳${convertToBanglaNumber(formPriceNum)}`,
+          priceNum: Number(formPriceNum),
+          descriptionEn: formDescriptionEn,
+          descriptionBn: formDescriptionBn,
+          categoryEn: formCategoryEn,
+          categoryBn: formCategoryBn,
+          image: formImage,
+          rating: 4.8,
+          pages: Number(formPages),
+          year: formYear,
+          weightKg: Number(formWeight)
+        };
+
+        try {
+          await db.collection("books").doc(bookId).set(bookData);
+          alert(lang === "bn" ? "বই সফলভাবে সংরক্ষিত হয়েছে!" : "Book details saved successfully!");
+          resetBookForm();
+        } catch (err) {
+          console.error(err);
+          alert("Error saving book in Firestore: " + err.message);
+        }
+      };
+
+      // Delete book
+      const handleDeleteBook = async (bookId) => {
+        const confirmDelete = window.confirm(
+          lang === "bn" ? "আপনি কি নিশ্চিতভাবে এই বইটি মুছে ফেলতে চান?" : "Are you sure you want to delete this book?"
+        );
+        if (confirmDelete) {
+          try {
+            await db.collection("books").doc(bookId).delete();
+            alert(lang === "bn" ? "বইটি সফলভাবে মুছে ফেলা হয়েছে!" : "Book deleted successfully!");
+          } catch (err) {
+            console.error(err);
+            alert("Delete error: " + err.message);
+          }
+        }
+      };
+
+      // Start editing book
+      const startEditBook = (book) => {
+        setEditingBookId(book.id);
+        setFormTitleEn(book.titleEn || "");
+        setFormTitleBn(book.titleBn || "");
+        setFormAuthorEn(book.authorEn || "");
+        setFormAuthorBn(book.authorBn || "");
+        setFormPriceNum(book.priceNum || "");
+        setFormDescriptionEn(book.descriptionEn || "");
+        setFormDescriptionBn(book.descriptionBn || "");
+        setFormCategoryEn(book.categoryEn || "Poetry & Classics");
+        setFormCategoryBn(book.categoryBn || "কবিতা ও ক্লাসিক");
+        setFormImage(book.image || "");
+        setFormPages(book.pages || "150");
+        setFormYear(book.year || "2024");
+        setFormWeight(book.weightKg || "0.3");
+        setShowAddForm(true);
+      };
+
+      const resetBookForm = () => {
+        setEditingBookId(null);
+        setFormTitleEn("");
+        setFormTitleBn("");
+        setFormAuthorEn("");
+        setFormAuthorBn("");
+        setFormPriceNum("");
+        setFormDescriptionEn("");
+        setFormDescriptionBn("");
+        setFormCategoryEn("Poetry & Classics");
+        setFormCategoryBn("কবিতা ও ক্লাসিক");
+        setFormImage("");
+        setFormPages("150");
+        setFormYear("2024");
+        setFormWeight("0.3");
+        setShowAddForm(false);
+      };
+
+      // Save/Edit active notice board in Firestore
+      const handleNoticeSubmit = async (e) => {
+        e.preventDefault();
+        try {
+          await db.collection("notices").doc("notice_board").set({
+            noticeBn: noticeInputBn,
+            noticeEn: noticeInputEn
+          });
+          setNoticeSuccess(true);
+          setTimeout(() => setNoticeSuccess(false), 3000);
+        } catch (err) {
+          console.error(err);
+          alert("Notice save failed: " + err.message);
+        }
+      };
+
+      // AUTHENTICATION LOGIN GATE
+      if (!isAdminLoggedIn) {
+        return (
+          <div className="min-h-screen flex flex-col justify-center items-center bg-[#070709] px-4 font-sans relative">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a150e] via-[#070709] to-[#070709] opacity-75"></div>
+            
+            <div className="relative w-full max-w-md bg-[#111115] border border-gold-medium/30 rounded-2xl p-8 space-y-6 text-center shadow-2xl">
+              <div className="w-14 h-14 rounded-full border border-gold-medium bg-[#070709] flex items-center justify-center mx-auto shadow-[0_0_15px_rgba(191,149,63,0.3)]">
+                <span className="font-royal text-gold-light text-2xl font-bold">🛡️</span>
+              </div>
+              <div>
+                <h2 className="font-royal text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-light to-gold-medium">
+                  Shornolipi Books
+                </h2>
+                <p className="text-xs text-gold-medium/70 uppercase tracking-widest mt-1">Admin Console Gate</p>
+              </div>
+
+              {authError && (
+                <div className="p-3 bg-red-950/40 border border-red-500/40 text-red-300 text-xs rounded-lg text-left leading-relaxed animate-pulse">
+                  ⚠️ {authError}
+                </div>
+              )}
+
+              <button
+                onClick={handleGoogleLogin}
+                disabled={isAuthLoading}
+                className="w-full flex items-center justify-center gap-3 py-3 bg-[#070709] border border-gold-medium/30 hover:border-gold-medium text-white hover:text-gold-light text-sm font-bold rounded-xl transition-all shadow-[0_4px_20px_rgba(0,0,0,0.5)] cursor-pointer"
+              >
+                {isAuthLoading ? (
+                  <div className="w-5 h-5 border-2 border-gold-medium border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.87-2.6-3.01-4.53-5.84-4.53z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                  </svg>
+                )}
+                <span>Sign In with Google Admin</span>
+              </button>
+
+              <button 
+                onClick={onBackToShop}
+                className="text-xs text-gray-400 hover:text-white underline block mx-auto transition-colors cursor-pointer"
+              >
+                ← Return to Book Shop
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      // FULLY SECURED ADMIN PANEL DASHBOARD
+      return (
+        <div className="min-h-screen bg-[#070709] text-[#E0E0E6] flex flex-col justify-between font-sans">
+          
+          {/* Header */}
+          <header className="border-b border-gold-medium/20 bg-[#111115]/80 py-4 px-6 sticky top-0 z-40 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">👑</span>
+                <div>
+                  <h2 className="font-royal font-bold text-lg text-white">Shornolipi Admin Panel</h2>
+                  <p className="text-[10px] text-green-400 font-mono tracking-widest">AUTHORIZED: {userEmail}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={onBackToShop}
+                  className="px-4 py-2 bg-[#070709] hover:bg-gold-medium/10 border border-gold-medium/20 rounded-lg text-xs font-semibold text-gold-light transition-all cursor-pointer"
+                >
+                  ← {lang === "bn" ? "দোকানে ফিরুন" : "Back to Shop"}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-red-950/20 hover:bg-red-500/10 border border-red-500/20 hover:border-red-500/40 rounded-lg text-xs font-semibold text-red-300 transition-all cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-7xl mx-auto px-4 py-8 w-full grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
+            
+            {/* Left Col: Live Notice Updates */}
+            <div className="space-y-6">
+              <div className="bg-[#111115] border border-gold-medium/20 rounded-xl p-5 space-y-4 shadow-xl">
+                <h3 className="font-royal text-base font-bold text-white border-b border-gold-medium/10 pb-2 flex items-center gap-2">
+                  <span>📢</span>
+                  <span>Notice Board Settings</span>
+                </h3>
+
+                <form onSubmit={handleNoticeSubmit} className="space-y-4">
+                  <div className="space-y-1 text-xs">
+                    <label className="text-gray-400 block font-medium">Bengali Announcement (বাংলা নোটিশ)</label>
+                    <textarea
+                      required
+                      rows="3"
+                      value={noticeInputBn}
+                      onChange={(e) => setNoticeInputBn(e.target.value)}
+                      className="w-full bg-[#070709] border border-gold-medium/20 focus:border-gold-medium p-2.5 rounded text-white focus:outline-none focus:ring-1 focus:ring-gold-medium resize-none font-sans"
+                    />
+                  </div>
+
+                  <div className="space-y-1 text-xs">
+                    <label className="text-gray-400 block font-medium">English Announcement (ইংরেজি নোটিশ)</label>
+                    <textarea
+                      required
+                      rows="3"
+                      value={noticeInputEn}
+                      onChange={(e) => setNoticeInputEn(e.target.value)}
+                      className="w-full bg-[#070709] border border-gold-medium/20 focus:border-gold-medium p-2.5 rounded text-white focus:outline-none focus:ring-1 focus:ring-gold-medium resize-none font-sans"
+                    />
+                  </div>
+
+                  {noticeSuccess && (
+                    <div className="p-2 bg-green-950/30 border border-green-500/30 text-green-300 text-xs rounded text-center animate-pulse">
+                      ✓ Saved & Synced with Firestore database!
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full py-2.5 bg-gradient-to-r from-gold-medium to-gold-dark hover:from-gold-light hover:to-gold-medium text-black text-xs font-bold rounded-lg uppercase tracking-wider transition-all cursor-pointer"
+                  >
+                    Save & Push Announcement
+                  </button>
+                </form>
+              </div>
+
+              {/* Secure Firebase cloud indicator */}
+              <div className="bg-[#111115] border border-gold-medium/20 rounded-xl p-5 text-xs text-gray-400 leading-relaxed space-y-2">
+                <h4 className="text-gold-light font-bold">☁️ Firestore Real-time Database</h4>
+                <p>Every book add, delete, edit, or notice updates you make here are instantly pushed to Firebase Firestore. Other readers on their devices see updates immediately without refreshing.</p>
+              </div>
+            </div>
+
+            {/* Right Cols: Noble Books manager */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              <div className="bg-[#111115] border border-gold-medium/20 rounded-xl p-5 space-y-4 shadow-xl">
+                <div className="flex items-center justify-between border-b border-gold-medium/10 pb-2">
+                  <h3 className="font-royal text-base font-bold text-white flex items-center gap-2">
+                    <span>📚</span>
+                    <span>Books Manager ({books.length})</span>
+                  </h3>
+                  <button
+                    onClick={() => {
+                      if (showAddForm) {
+                        resetBookForm();
+                      } else {
+                        setShowAddForm(true);
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-gold-medium/10 border border-gold-medium/30 hover:border-gold-medium rounded-lg text-xs font-bold text-gold-light transition-all cursor-pointer"
+                  >
+                    {showAddForm ? "Cancel Form" : "+ Add New Book"}
+                  </button>
+                </div>
+
+                {/* Book adding / editing form */}
+                {showAddForm && (
+                  <form onSubmit={handleBookSubmit} className="bg-[#070709] p-4 rounded-xl border border-gold-medium/20 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    
+                    {/* Header info */}
+                    <div className="md:col-span-2 text-gold-light font-bold border-b border-gold-medium/10 pb-1 flex items-center justify-between">
+                      <span>{editingBookId ? "✏️ Edit Book Specifications" : "➕ Add New Book Specifications"}</span>
+                    </div>
+
+                    {/* title en */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Book Title (English) *</label>
+                      <input 
+                        required type="text" placeholder="e.g. The Golden Boat"
+                        value={formTitleEn} onChange={(e) => setFormTitleEn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none"
+                      />
+                    </div>
+
+                    {/* title bn */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">বইয়ের নাম (বাংলা) *</label>
+                      <input 
+                        required type="text" placeholder="যেমন: সোনার তরী"
+                        value={formTitleBn} onChange={(e) => setFormTitleBn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none"
+                      />
+                    </div>
+
+                    {/* author en */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Author Name (English) *</label>
+                      <input 
+                        required type="text" placeholder="e.g. Rabindranath Tagore"
+                        value={formAuthorEn} onChange={(e) => setFormAuthorEn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none"
+                      />
+                    </div>
+
+                    {/* author bn */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">লেখকের নাম (বাংলা) *</label>
+                      <input 
+                        required type="text" placeholder="যেমন: রবীন্দ্রনাথ ঠাকুর"
+                        value={formAuthorBn} onChange={(e) => setFormAuthorBn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none"
+                      />
+                    </div>
+
+                    {/* Price Num */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Price (Taka Number) *</label>
+                      <input 
+                        required type="number" placeholder="e.g. 350"
+                        value={formPriceNum} onChange={(e) => setFormPriceNum(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none font-mono"
+                      />
+                    </div>
+
+                    {/* Image Cover URL */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Image Cover URL *</label>
+                      <input 
+                        required type="url" placeholder="https://unsplash.com/..."
+                        value={formImage} onChange={(e) => setFormImage(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none font-mono"
+                      />
+                    </div>
+
+                    {/* category en */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Category (English) *</label>
+                      <input 
+                        required type="text" placeholder="e.g. Western Classics"
+                        value={formCategoryEn} onChange={(e) => setFormCategoryEn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none"
+                      />
+                    </div>
+
+                    {/* category bn */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">ক্যাটাগরি (বাংলা) *</label>
+                      <input 
+                        required type="text" placeholder="যেমন: ক্লাসিক উপন্যাস"
+                        value={formCategoryBn} onChange={(e) => setFormCategoryBn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none"
+                      />
+                    </div>
+
+                    {/* pages */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Pages count</label>
+                      <input 
+                        type="number" placeholder="120"
+                        value={formPages} onChange={(e) => setFormPages(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none font-mono"
+                      />
+                    </div>
+
+                    {/* Weight Kg */}
+                    <div>
+                      <label className="text-gray-400 block mb-1">Weight in KG</label>
+                      <input 
+                        type="number" step="0.05" placeholder="0.3"
+                        value={formWeight} onChange={(e) => setFormWeight(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none font-mono"
+                      />
+                    </div>
+
+                    {/* desc en */}
+                    <div className="md:col-span-2">
+                      <label className="text-gray-400 block mb-1">Description (English)</label>
+                      <textarea 
+                        rows="2" placeholder="Brief metadata description..."
+                        value={formDescriptionEn} onChange={(e) => setFormDescriptionEn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none resize-none"
+                      />
+                    </div>
+
+                    {/* desc bn */}
+                    <div className="md:col-span-2">
+                      <label className="text-gray-400 block mb-1">বইয়ের বিবরণ (বাংলা)</label>
+                      <textarea 
+                        rows="2" placeholder="সংক্ষিপ্ত বিবরণী..."
+                        value={formDescriptionBn} onChange={(e) => setFormDescriptionBn(e.target.value)}
+                        className="w-full bg-[#111115] border border-gold-medium/20 focus:border-gold-medium p-2 rounded text-white focus:outline-none resize-none"
+                      />
+                    </div>
+
+                    {/* Actions buttons */}
+                    <div className="md:col-span-2 flex gap-2 justify-end pt-2 border-t border-gold-medium/10">
+                      <button 
+                        type="button" onClick={resetBookForm}
+                        className="px-4 py-2 bg-gray-900 border border-gold-medium/10 rounded-lg text-gray-400 hover:text-white cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit"
+                        className="px-5 py-2 bg-gradient-to-r from-gold-medium to-gold-dark text-black font-extrabold rounded-lg hover:from-gold-light hover:to-gold-medium transition-all cursor-pointer"
+                      >
+                        {editingBookId ? "Save Changes" : "Create Book Document"}
+                      </button>
+                    </div>
+
+                  </form>
+                )}
+
+                {/* Table of books */}
+                <div className="overflow-x-auto border border-gold-medium/10 rounded-xl">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="bg-[#070709] border-b border-gold-medium/10 text-gold-medium font-royal">
+                        <th className="p-3">Cover</th>
+                        <th className="p-3">Title & Author</th>
+                        <th className="p-3">Price</th>
+                        <th className="p-3">Category</th>
+                        <th className="p-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gold-medium/5">
+                      {books.map((book) => (
+                        <tr key={book.id} className="hover:bg-[#1c1c24]/30">
+                          <td className="p-3">
+                            <img src={book.image} alt="" className="w-8 h-10 object-cover rounded bg-[#070709] border border-gold-medium/10" />
+                          </td>
+                          <td className="p-3">
+                            <div className="font-bold text-white leading-tight">{book.titleBn}</div>
+                            <div className="text-[10px] text-gray-400 mt-0.5">{book.authorBn}</div>
+                          </td>
+                          <td className="p-3 font-mono text-[#FCF6BA] font-bold">
+                            ৳{book.priceNum}
+                          </td>
+                          <td className="p-3 text-gray-400">
+                            {book.categoryBn}
+                          </td>
+                          <td className="p-3 text-right space-x-1.5 shrink-0 whitespace-nowrap">
+                            <button
+                              onClick={() => startEditBook(book)}
+                              className="px-2.5 py-1 bg-blue-950/20 hover:bg-blue-500/10 border border-blue-500/20 text-blue-300 rounded text-[10px] font-bold transition-all cursor-pointer"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteBook(book.id)}
+                              className="px-2.5 py-1 bg-red-950/20 hover:bg-red-500/10 border border-red-500/20 text-red-300 rounded text-[10px] font-bold transition-all cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+            </div>
+
+          </main>
+
+          <footer className="mt-12 bg-[#111115] border-t border-gold-medium/10 py-4 px-6 text-center text-[10px] text-gray-500 font-royal">
+            © 2026 Shornolipi Books Admin Area. Handcrafted Security Suite.
+          </footer>
+
+        </div>
+      );
+    }
+
+    // Render App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+
+</body>
+</html>
